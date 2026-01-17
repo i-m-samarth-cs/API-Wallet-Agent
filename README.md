@@ -67,13 +67,13 @@ Open http://localhost:3000
 - **FastAPI**: Backend agent service
 - **Next.js**: Frontend UI
 
-## 🚀 Deployment
+## 🚀 Deployment (100% Free!)
 
 Ready to deploy? Check out the comprehensive **[DEPLOYMENT.md](./DEPLOYMENT.md)** guide!
 
-**Quick Deploy:**
-- **Frontend**: Deploy to [Vercel](https://vercel.com) (free tier)
-- **Backend/Provider**: Deploy to [Railway](https://railway.app) or [Render](https://render.com) (free tier)
+**Quick Deploy (Free Options):**
+- **Frontend**: Deploy to [Vercel](https://vercel.com) (free tier - unlimited)
+- **Backend/Provider**: Deploy to [Render.com](https://render.com) or [Fly.io](https://fly.io) (free tier)
 
 All deployment configurations are included:
 - ✅ Dockerfiles for backend and provider

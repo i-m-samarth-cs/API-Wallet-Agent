@@ -5,14 +5,16 @@ Complete deployment guide for all components of the API Wallet Agent application
 ## 📋 Overview
 
 The application consists of:
-1. **Frontend** (Next.js) → Deploy to Vercel (Recommended) or Netlify
-2. **Backend** (FastAPI) → Deploy to Railway, Render, or Fly.io
-3. **Provider** (FastAPI) → Deploy to Railway, Render, or Fly.io
+1. **Frontend** (Next.js) → Deploy to Vercel (Free - Recommended) or Netlify
+2. **Backend** (FastAPI) → Deploy to Render.com (Free) or Fly.io (Free)
+3. **Provider** (FastAPI) → Deploy to Render.com (Free) or Fly.io (Free)
 4. **Smart Contracts** → Already deployed on Arc blockchain
+
+**All options are 100% free! No credit card required.**
 
 ---
 
-## 🌐 Option 1: Quick Deploy with Vercel + Railway (Recommended)
+## 🌐 Option 1: Quick Deploy with Vercel + Render.com (100% Free - Recommended)
 
 ### Frontend - Vercel (Free Tier)
 
@@ -26,26 +28,32 @@ The application consists of:
    ```
 
 2. **Deploy to Vercel**
-   - Go to [vercel.com](https://vercel.com)
+   - Go to [vercel.com](https://vercel.com) (free signup)
    - Click "New Project"
    - Import your GitHub repository
    - Select the `frontend` folder as the root directory
-   - Add Environment Variables:
+   - Add Environment Variables (update after backend is deployed):
      ```
-     NEXT_PUBLIC_BACKEND_URL=https://your-backend.railway.app
-     NEXT_PUBLIC_PROVIDER_URL=https://your-provider.railway.app
+     NEXT_PUBLIC_BACKEND_URL=https://your-backend.onrender.com
+     NEXT_PUBLIC_PROVIDER_URL=https://your-provider.onrender.com
      ```
    - Click "Deploy"
    - Vercel will auto-deploy on every push
 
-### Backend - Railway (Free Tier)
+### Backend - Render.com (Free Tier)
 
 1. **Deploy Backend**
-   - Go to [railway.app](https://railway.app)
-   - Click "New Project" → "Deploy from GitHub repo"
-   - Select your repository
-   - Add a new service → Select `backend` folder
-   - Railway will detect the Dockerfile automatically
+   - Go to [render.com](https://render.com) (free signup)
+   - Click "New +" → "Web Service"
+   - Connect your GitHub repository
+   - Settings:
+     - **Name**: `api-wallet-backend`
+     - **Region**: Choose closest to you
+     - **Branch**: `main`
+     - **Root Directory**: `backend`
+     - **Runtime**: `Docker`
+     - **Dockerfile Path**: `backend/Dockerfile`
+     - **Instance Type**: Free (spins down after 15min inactivity, wakes on request)
    - Add Environment Variables:
      ```
      GEMINI_API_KEY=your_gemini_key
@@ -56,60 +64,74 @@ The application consists of:
      APIWALLET_CONTRACT=your_contract_address
      SIMULATION_MODE=true
      ```
-   - Railway will provide a URL like `https://your-backend.railway.app`
-
-2. **Deploy Provider**
-   - In the same Railway project, add another service
-   - Select `provider` folder
-   - No environment variables needed for provider
-   - Railway will provide a URL like `https://your-provider.railway.app`
-
-3. **Update Frontend Environment Variables**
-   - Go back to Vercel
-   - Update environment variables with Railway URLs:
-     ```
-     NEXT_PUBLIC_BACKEND_URL=https://your-backend.railway.app
-     NEXT_PUBLIC_PROVIDER_URL=https://your-provider.railway.app
-     ```
-   - Redeploy frontend
-
----
-
-## 🔵 Option 2: Deploy with Render.com (Alternative)
-
-### Setup
-
-1. **Push code to GitHub** (if not already done)
-
-2. **Deploy Backend**
-   - Go to [render.com](https://render.com)
-   - Click "New +" → "Web Service"
-   - Connect your GitHub repository
-   - Use these settings:
-     - **Name**: `api-wallet-backend`
-     - **Root Directory**: `backend`
-     - **Runtime**: Docker
-     - **Dockerfile Path**: `backend/Dockerfile`
-   - Add Environment Variables (same as Railway)
    - Click "Create Web Service"
    - Render will provide: `https://api-wallet-backend.onrender.com`
+   - ⚠️ First deploy takes 5-10 minutes
 
-3. **Deploy Provider**
-   - Repeat step 2 with:
+2. **Deploy Provider**
+   - In Render dashboard, click "New +" → "Web Service"
+   - Connect same GitHub repository
+   - Settings:
      - **Name**: `api-wallet-provider`
      - **Root Directory**: `provider`
+     - **Runtime**: `Docker`
      - **Dockerfile Path**: `provider/Dockerfile`
+     - **Instance Type**: Free
+   - Click "Create Web Service"
+   - Render will provide: `https://api-wallet-provider.onrender.com`
 
-4. **Deploy Frontend**
-   - Go to Render → "New +" → "Static Site"
-   - Connect repository
-   - Build Command: `cd frontend && npm install && npm run build`
-   - Publish Directory: `frontend/.next`
-   - Add Environment Variables:
+3. **Update Frontend Environment Variables**
+   - Go back to Vercel dashboard
+   - Go to your project → Settings → Environment Variables
+   - Update with Render URLs:
      ```
      NEXT_PUBLIC_BACKEND_URL=https://api-wallet-backend.onrender.com
      NEXT_PUBLIC_PROVIDER_URL=https://api-wallet-provider.onrender.com
      ```
+   - Redeploy frontend (Vercel auto-deploys on env var changes)
+
+---
+
+## 🔵 Option 2: Deploy with Fly.io (Alternative Free Option)
+
+Fly.io offers free tier with 3 shared-cpu-1x VMs (256MB RAM each).
+
+### Setup
+
+1. **Install Fly CLI**
+   ```bash
+   # Windows (PowerShell)
+   iwr https://fly.io/install.ps1 -useb | iex
+   
+   # Mac/Linux
+   curl -L https://fly.io/install.sh | sh
+   ```
+
+2. **Login to Fly.io**
+   ```bash
+   fly auth login
+   ```
+
+3. **Deploy Backend**
+   ```bash
+   cd backend
+   fly launch --name api-wallet-backend --region iad
+   # When asked, don't deploy yet
+   # Set secrets (environment variables):
+   fly secrets set GEMINI_API_KEY=your_key GROQ_API_KEY=your_key ARC_RPC_URL=https://rpc.arc.xyz SIMULATION_MODE=true
+   fly deploy
+   ```
+
+4. **Deploy Provider**
+   ```bash
+   cd provider
+   fly launch --name api-wallet-provider --region iad
+   fly deploy
+   ```
+
+5. **Update Frontend Env Vars**
+   - Get your URLs: `fly status` in each directory
+   - Update Vercel environment variables with Fly.io URLs
 
 ---
 
@@ -212,8 +234,8 @@ NEXT_PUBLIC_PROVIDER_URL=https://your-provider-url.com
 After deployment, you'll have:
 
 - **Frontend**: `https://your-app.vercel.app`
-- **Backend**: `https://your-backend.railway.app`
-- **Provider**: `https://your-provider.railway.app`
+- **Backend**: `https://api-wallet-backend.onrender.com` (Render) or `https://api-wallet-backend.fly.dev` (Fly.io)
+- **Provider**: `https://api-wallet-provider.onrender.com` (Render) or `https://api-wallet-provider.fly.dev` (Fly.io)
 
 Update your frontend environment variables with these URLs!
 
@@ -228,12 +250,14 @@ Update your frontend environment variables with these URLs!
 
 ---
 
-## 💰 Cost Estimate
+## 💰 Cost Estimate (100% Free!)
 
-- **Vercel**: Free tier (hobby plan)
-- **Railway**: Free tier with $5 credit/month
-- **Render**: Free tier available
-- **Total**: ~$0/month for small projects
+- **Vercel**: Free tier (hobby plan) - Unlimited
+- **Render**: Free tier - Spins down after 15min inactivity, auto-wakes on request
+- **Fly.io**: Free tier - 3 shared-cpu-1x VMs (256MB RAM each)
+- **Total**: $0/month for small projects!
+
+**Note**: Render free tier services spin down after 15 minutes of inactivity. First request after spin-down takes ~30 seconds to wake up. This is normal for free tier.
 
 ---
 
