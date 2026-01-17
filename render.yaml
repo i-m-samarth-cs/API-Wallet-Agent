@@ -1,0 +1,46 @@
+services:
+  # Backend API Service
+  - type: web
+    name: api-wallet-backend
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    envVars:
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GROQ_API_KEY
+        sync: false
+      - key: ARC_RPC_URL
+        sync: false
+      - key: ARC_CHAIN_ID
+        value: "5042002"
+      - key: USDC_ADDRESS
+        sync: false
+      - key: APIWALLET_CONTRACT
+        sync: false
+      - key: CIRCLE_API_KEY
+        sync: false
+      - key: CIRCLE_BASE_URL
+        value: "https://api.circle.com"
+      - key: CIRCLE_WALLET_ID
+        sync: false
+      - key: SIMULATION_MODE
+        value: "true"
+      - key: PORT
+        fromService:
+          type: web
+          name: api-wallet-backend
+          property: port
+
+  # Provider Service
+  - type: web
+    name: api-wallet-provider
+    runtime: docker
+    dockerfilePath: ./provider/Dockerfile
+    dockerContext: ./provider
+    envVars:
+      - key: PORT
+        fromService:
+          type: web
+          name: api-wallet-provider
+          property: port

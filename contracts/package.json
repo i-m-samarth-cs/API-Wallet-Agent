@@ -1,0 +1,14 @@
+{
+  "name": "api-wallet-contracts",
+  "version": "1.0.0",
+  "scripts": {
+    "deploy": "npx hardhat run scripts/deploy.ts --network arc",
+    "pay": "npx hardhat run scripts/pay.ts --network arc"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^4.0.0",
+    "hardhat": "^2.19.0",
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  }
+}
